@@ -19,4 +19,7 @@ public class Customer {
     private String aadhaarNumber;
 
     private Address address;
+
+    private String largeData;
+
 }

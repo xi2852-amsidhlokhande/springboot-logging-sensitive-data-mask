@@ -1,13 +1,16 @@
 package com.amsidh.mvc.logger;
 
 import com.fasterxml.jackson.core.JsonStreamContext;
+import lombok.SneakyThrows;
 import net.logstash.logback.mask.ValueMasker;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
+import java.util.zip.GZIPOutputStream;
 
 import static java.util.regex.Pattern.MULTILINE;
 
@@ -16,8 +19,12 @@ public class SensitiveMaskingPatternLayout implements ValueMasker {
     private Pattern partialMask;
     private Pattern fullMask;
 
+    private Pattern compressMask;
+
     private final List<String> fullMaskPatterns = new ArrayList<>();
     private final List<String> partialMaskPatterns = new ArrayList<>();
+
+    private final List<String> compressMaskPatterns = new ArrayList<>();
     private static final Integer LAST_PLAIN_TEXT_CHARS = 4;
     private static final Character MASKING_CHAR = '*';
     private static final String COLON = ":";
@@ -46,6 +53,9 @@ public class SensitiveMaskingPatternLayout implements ValueMasker {
         this.fullMaskPatterns.add("(?i)\\\"(?:customerFullName|customerFirstName|customerMiddleName|customerLastName|custName|customerName|panHolderName|embossName|secondaryAccountHolderName)\\\"\\s*:\\s*\\\"(?:.*?)\\\"");
         this.fullMaskPatterns.add("(?i)\\\"(?:motherName|motherMaidenName|mothersMaidenName|mothersName|motherFirstName|motherMiddleName|motherLastName)\\\"\\s*:\\s*\\\"(?:.*?)\\\"");
         this.fullMask = Pattern.compile(String.join("|", this.fullMaskPatterns), MULTILINE);
+
+        this.compressMaskPatterns.add("(?i)\\\"(?:largeData|aadhaarData|photo|image|file|data)\\\"\\s*:\\s*\\\"(?:.*?)\\\"");
+        this.compressMask = Pattern.compile(String.join("|", this.compressMaskPatterns), MULTILINE);
     }
 
     @Override
@@ -63,6 +73,10 @@ public class SensitiveMaskingPatternLayout implements ValueMasker {
         findAndReplace(partialMatcher, sb, true);
         Matcher fullMatcher = fullMask.matcher(sb);
         findAndReplace(fullMatcher, sb, false);
+
+        //Compress Data Masking
+        Matcher compressDataMatcher = compressMask.matcher(sb);
+        compressData(compressDataMatcher, sb);
 
         return sb.toString();
     }
@@ -85,5 +99,28 @@ public class SensitiveMaskingPatternLayout implements ValueMasker {
         }
     }
 
+    private void compressData(Matcher matcher, StringBuilder sb) {
+        while (matcher.find()) {
+            IntStream.rangeClosed(0, matcher.groupCount()).forEach(group -> {
+                if (matcher.group(group) != null) {
+                    int start = matcher.start(group);
+                    int end = matcher.end(group);
+                    String result = sb.substring(start, end);
+                    start = result.contains(COLON) ? sb.toString().indexOf(COLON, start) + 1 : start;
+                    String data = sb.substring(start, end);
+                    sb.replace(start, end, compressString(data));
+                }
+            });
+        }
+    }
+
+    @SneakyThrows
+    private String compressString(String data) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        GZIPOutputStream gzip = new GZIPOutputStream(out);
+        gzip.write(data.getBytes());
+        gzip.close();
+        return out.toString("ISO-8859-1");
+    }
 
 }
