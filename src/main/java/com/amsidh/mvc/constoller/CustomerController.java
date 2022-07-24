@@ -24,7 +24,7 @@ public class CustomerController {
     @GetMapping("/{id}")
     public Customer getCustomer(@PathVariable Integer id) {
         Customer customer = customerService.findCustomer(id);
-        log.info("Response return {}", objectMapper.writeValueAsString(customer), kv("BackendSystemName", "MS-Service"));
+        log.info("Response return {}", objectMapper.writeValueAsString(customer));
         return customer;
     }
 

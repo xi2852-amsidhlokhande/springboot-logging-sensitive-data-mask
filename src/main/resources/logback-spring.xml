@@ -12,12 +12,17 @@
                 <timestamp/>
                 <sequence/>
                 <context/>
-                <mdc/>
                 <pattern>
-                    <omitEmptyFields>true</omitEmptyFields>
-                    {
-                    "SystemName":"%mdc{BackendSystemName}"
-                    }
+                    <pattern>
+                        <omitEmptyFields>true</omitEmptyFields>
+                        {
+                        "correlationId": "%mdc{traceId}",
+                        "span_id": "%mdc{spanId}",
+                        "parent_span_id": "%mdc{parentId}",
+                        "exported": "%mdc{sampled}",
+                        "SystemName":"%mdc{BackendSystemName}"
+                        }
+                    </pattern>
                 </pattern>
                 <logLevel/>
                 <threadName/>
