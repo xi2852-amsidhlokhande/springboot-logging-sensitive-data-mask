@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <springProperty scope="context" name="service-name" source="spring.application.name"/>
+
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder charset="UTF-8" class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <!--<jsonGeneratorDecorator class="net.logstash.logback.mask.MaskingJsonGeneratorDecorator">
+                <valueMasker class="com.ybl.genie.common.utils.CustomValueMasker"/>
+            </jsonGeneratorDecorator>-->
+            <providers>
+                <timestamp/>
+                <sequence/>
+                <context/>
+                <mdc/>
+                <pattern>
+                    <omitEmptyFields>true</omitEmptyFields>
+                    {
+                    "SystemName":"%mdc{BackendSystemName}"
+                    }
+                </pattern>
+                <logLevel/>
+                <threadName/>
+                <callerData>
+                    <fieldName>logClassInfo</fieldName>
+                    <classFieldName>class</classFieldName>
+                    <methodFieldName>method</methodFieldName>
+                    <lineFieldName>line</lineFieldName>
+                    <fileFieldName>file</fileFieldName>
+                </callerData>
+                <arguments>
+                    <includeNonStructuredArguments>false</includeNonStructuredArguments>
+                </arguments>
+                <logstashMarkers/>
+                <message/>
+                <stackHash/>
+                <stackTrace/>
+            </providers>
+        </encoder>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="stdout"/>
+    </root>
+</configuration>
