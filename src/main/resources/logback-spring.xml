@@ -3,11 +3,50 @@
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <springProperty scope="context" name="service-name" source="spring.application.name"/>
 
+    <!--
     <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
         <encoder charset="UTF-8" class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
-            <!--<jsonGeneratorDecorator class="net.logstash.logback.mask.MaskingJsonGeneratorDecorator">
-                <valueMasker class="com.ybl.genie.common.utils.CustomValueMasker"/>
-            </jsonGeneratorDecorator>-->
+            <providers>
+                <timestamp/>
+                <sequence/>
+                <context/>
+                <pattern>
+                    <pattern>
+                        <omitEmptyFields>true</omitEmptyFields>
+                        {
+                        "correlationId": "%mdc{traceId}",
+                        "span_id": "%mdc{spanId}",
+                        "parent_span_id": "%mdc{parentId}",
+                        "exported": "%mdc{sampled}",
+                        "SystemName":"%mdc{BackendSystemName}"
+                        }
+                    </pattern>
+                </pattern>
+                <logLevel/>
+                <threadName/>
+                <callerData>
+                    <fieldName>logClassInfo</fieldName>
+                    <classFieldName>class</classFieldName>
+                    <methodFieldName>method</methodFieldName>
+                    <lineFieldName>line</lineFieldName>
+                    <fileFieldName>file</fileFieldName>
+                </callerData>
+                <arguments>
+                    <includeNonStructuredArguments>false</includeNonStructuredArguments>
+                </arguments>
+                <logstashMarkers/>
+                <message/>
+                <stackHash/>
+                <stackTrace/>
+            </providers>
+        </encoder>
+    </appender>
+    -->
+    <appender name="stdout-mask" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder charset="UTF-8" class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <jsonGeneratorDecorator class="net.logstash.logback.mask.MaskingJsonGeneratorDecorator">
+                <valueMasker class="com.amsidh.mvc.logger.SensitiveMaskingPatternLayout"/>
+            </jsonGeneratorDecorator>
             <providers>
                 <timestamp/>
                 <sequence/>
@@ -45,6 +84,7 @@
     </appender>
 
     <root level="info">
-        <appender-ref ref="stdout"/>
+        <!--<appender-ref ref="stdout"/>-->
+        <appender-ref ref="stdout-mask"/>
     </root>
 </configuration>

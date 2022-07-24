@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,7 +32,8 @@ public class CustomerController {
     @SneakyThrows
     @PostMapping
     public Customer saveCustomer(@RequestBody Customer customer) {
-        log.info("Request received {}", objectMapper.writeValueAsString(customer));
+        JSONObject jsonObject = new JSONObject(customer);
+        log.info("Request received {}", jsonObject);
         return customerService.saveCustomer(customer);
     }
 

@@ -23,7 +23,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     static {
 
-        customers.add(Customer.builder().id(1).name("Amsidh").emailId("amsidhlokhande@gmail.com").mobileNumber("8108551845").panCard("ABCDE3245J").aadhaarCard("549824674826").address(Address.builder().city("Pune").state("MH").pinCode(412105L).build()).build());
+        customers.add(Customer.builder().id(1).customerFullName("Amsidh").emailId("amsidhlokhande@gmail.com").mobileNumber("8108551845").panCard("ABCDE3245J").aadhaarNumber("549824674826").address(Address.builder().city("Pune").state("MH").pinCode(412105L).build()).build());
     }
 
     @Override
@@ -40,9 +40,9 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Customer updateCustomer(Integer id, Customer updateCustomer) {
         return customers.stream().filter(customer -> Objects.equals(customer.getId(), id)).findFirst().map(customer -> {
-            ofNullable(updateCustomer.getName()).ifPresent(customer::setName);
+            ofNullable(updateCustomer.getCustomerFullName()).ifPresent(customer::setCustomerFullName);
             ofNullable(updateCustomer.getEmailId()).ifPresent(customer::setEmailId);
-            ofNullable(updateCustomer.getAadhaarCard()).ifPresent(customer::setAadhaarCard);
+            ofNullable(updateCustomer.getAadhaarNumber()).ifPresent(customer::setAadhaarNumber);
             ofNullable(updateCustomer.getPanCard()).ifPresent(customer::setPanCard);
             ofNullable(updateCustomer.getMobileNumber()).ifPresent(customer::setMobileNumber);
             ofNullable(updateCustomer.getAddress()).ifPresent(updateAddress -> {

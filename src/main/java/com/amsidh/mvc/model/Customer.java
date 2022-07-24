@@ -12,11 +12,11 @@ import lombok.NoArgsConstructor;
 public class Customer {
 
     private Integer id;
-    private String name;
+    private String customerFullName;
     private String emailId;
     private String mobileNumber;
     private String panCard;
-    private String aadhaarCard;
+    private String aadhaarNumber;
 
     private Address address;
 }
