@@ -69,7 +69,7 @@ public class SensitiveMaskingPatternLayout implements ValueMasker {
 
     private void findAndReplace(Matcher matcher, StringBuilder sb, boolean matcherType) {
         while (matcher.find()) {
-            IntStream.rangeClosed(1, matcher.groupCount()).forEach(group -> {
+            IntStream.rangeClosed(0, matcher.groupCount()).forEach(group -> {
                 if (matcher.group(group) != null) {
                     int start = matcher.start(group);
                     int end = matcher.end(group);
