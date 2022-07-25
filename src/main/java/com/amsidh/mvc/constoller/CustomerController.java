@@ -33,7 +33,7 @@ public class CustomerController {
     @PostMapping
     public Customer saveCustomer(@RequestBody Customer customer) {
         JSONObject jsonObject = new JSONObject(customer);
-        log.info("Request received {}", jsonObject);
+        log.info("Request received {}", objectMapper.writeValueAsString(customer));
         return customerService.saveCustomer(customer);
     }
 

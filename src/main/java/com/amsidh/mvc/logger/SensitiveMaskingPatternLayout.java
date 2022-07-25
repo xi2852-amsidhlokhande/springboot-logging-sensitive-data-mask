@@ -76,7 +76,7 @@ public class SensitiveMaskingPatternLayout implements ValueMasker {
 
         //Compress Data Masking
         Matcher compressDataMatcher = compressMask.matcher(sb);
-        compressData(compressDataMatcher, sb);
+        replaceWithEmpty(compressDataMatcher, sb);
 
         return sb.toString();
     }
@@ -99,7 +99,7 @@ public class SensitiveMaskingPatternLayout implements ValueMasker {
         }
     }
 
-    private void compressData(Matcher matcher, StringBuilder sb) {
+    private void replaceWithEmpty(Matcher matcher, StringBuilder sb) {
         while (matcher.find()) {
             IntStream.rangeClosed(0, matcher.groupCount()).forEach(group -> {
                 if (matcher.group(group) != null) {
@@ -107,8 +107,8 @@ public class SensitiveMaskingPatternLayout implements ValueMasker {
                     int end = matcher.end(group);
                     String result = sb.substring(start, end);
                     start = result.contains(COLON) ? sb.toString().indexOf(COLON, start) + 1 : start;
-                    String data = sb.substring(start, end);
-                    sb.replace(start, end, compressString(data));
+                    sb.replace(start, end, "\"\"");
+                    //IntStream.rangeClosed(start, end).forEach(index -> sb.setCharAt(index, MASKING_CHAR));
                 }
             });
         }
