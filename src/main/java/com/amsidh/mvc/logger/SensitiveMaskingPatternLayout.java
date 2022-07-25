@@ -78,7 +78,7 @@ public class SensitiveMaskingPatternLayout implements ValueMasker {
         Matcher compressDataMatcher = compressMask.matcher(sb);
         replaceWithEmpty(compressDataMatcher, sb);
 
-        return sb.toString();
+        return sb.toString().isEmpty() ? message : sb.toString();
     }
 
     private void findAndReplace(Matcher matcher, StringBuilder sb, boolean matcherType) {
@@ -108,7 +108,7 @@ public class SensitiveMaskingPatternLayout implements ValueMasker {
                     String keyValue = sb.substring(start, end);
                     if (keyValue.contains(":")) {
                         int valueStartIndex = start + keyValue.indexOf(":");
-                        sb.replace(valueStartIndex + 2, end - 1, "Amsidh");
+                        sb.replace(valueStartIndex + 2, end - 1, "");
                         matcher.region(valueStartIndex + 2, sb.length());
                     }
 

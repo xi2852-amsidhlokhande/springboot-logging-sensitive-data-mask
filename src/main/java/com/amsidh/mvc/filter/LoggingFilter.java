@@ -26,12 +26,11 @@ public class LoggingFilter extends OncePerRequestFilter {
         long startTime = System.currentTimeMillis();
         filterChain.doFilter(contentCachingRequestWrapper, contentCachingResponseWrapper);
         long endTime = System.currentTimeMillis();
-        long timeTaken = endTime - startTime;
 
         String requestBody = getStringValue(contentCachingRequestWrapper.getContentAsByteArray(), contentCachingRequestWrapper.getCharacterEncoding());
         String responseBody = getStringValue(contentCachingResponseWrapper.getContentAsByteArray(), contentCachingResponseWrapper.getCharacterEncoding());
 
-        log.info("Finished processing- REQUEST_METHOD={}, REQUEST_URL={}, REQUEST_PAYLOAD={}, RESPONSE_CODE={}, RESPONSE_PAYLOAD={} TIME_TAKEN={} millisecond", request.getMethod(), request.getRequestURL().toString(), requestBody, response.getStatus(), responseBody, timeTaken, kv("BackendSystemName", "logging-sensitive-data"));
+        log.info("Finished processing- REQUEST_METHOD={}, REQUEST_URL={}, REQUEST_PAYLOAD={}, RESPONSE_CODE={}, RESPONSE_PAYLOAD={} TIME_TAKEN={} millisecond", request.getMethod(), request.getRequestURL().toString(), requestBody, response.getStatus(), responseBody, (endTime - startTime), kv("BackendSystemName", "logging-sensitive-data"));
 
         contentCachingResponseWrapper.copyBodyToResponse();
 
