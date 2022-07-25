@@ -105,10 +105,14 @@ public class SensitiveMaskingPatternLayout implements ValueMasker {
                 if (matcher.group(group) != null) {
                     int start = matcher.start(group);
                     int end = matcher.end(group);
-                    String result = sb.substring(start, end);
-                    start = result.contains(COLON) ? sb.toString().indexOf(COLON, start) + 1 : start;
-                    sb.replace(start, end, "\"\"");
-                    //IntStream.rangeClosed(start, end).forEach(index -> sb.setCharAt(index, MASKING_CHAR));
+                    String keyValue = sb.substring(start, end);
+                    if (keyValue.contains(":")) {
+                        int valueStartIndex = start + keyValue.indexOf(":");
+                        sb.replace(valueStartIndex + 2, end - 1, "Amsidh");
+                        matcher.region(valueStartIndex + 2, sb.length());
+                    }
+
+
                 }
             });
         }

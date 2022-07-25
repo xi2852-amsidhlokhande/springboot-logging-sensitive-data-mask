@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
 @Slf4j
 @Component
 public class LoggingFilter extends OncePerRequestFilter {
@@ -21,18 +23,18 @@ public class LoggingFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         ContentCachingRequestWrapper contentCachingRequestWrapper = new ContentCachingRequestWrapper(request);
         ContentCachingResponseWrapper contentCachingResponseWrapper = new ContentCachingResponseWrapper(response);
-
         long startTime = System.currentTimeMillis();
-        String requestBody = getStringValue(contentCachingRequestWrapper.getContentAsByteArray(), contentCachingRequestWrapper.getCharacterEncoding());
-        log.info("REQUEST_METHOD={}, REQUEST_URL={}, REQUEST_PAYLOAD={}", request.getMethod(), request.getRequestURL().toString(), requestBody);
-
         filterChain.doFilter(contentCachingRequestWrapper, contentCachingResponseWrapper);
-
         long endTime = System.currentTimeMillis();
         long timeTaken = endTime - startTime;
+
+        String requestBody = getStringValue(contentCachingRequestWrapper.getContentAsByteArray(), contentCachingRequestWrapper.getCharacterEncoding());
         String responseBody = getStringValue(contentCachingResponseWrapper.getContentAsByteArray(), contentCachingResponseWrapper.getCharacterEncoding());
-        log.info("RESPONSE_CODE={}, TIME_TAKEN={}, RESPONSE_PAYLOAD={}", response.getStatus(), timeTaken, responseBody);
+
+        log.info("Finished processing- REQUEST_METHOD={}, REQUEST_URL={}, REQUEST_PAYLOAD={}, RESPONSE_CODE={}, RESPONSE_PAYLOAD={} TIME_TAKEN={} millisecond", request.getMethod(), request.getRequestURL().toString(), requestBody, response.getStatus(), responseBody, timeTaken, kv("BackendSystemName", "logging-sensitive-data"));
+
         contentCachingResponseWrapper.copyBodyToResponse();
+
     }
 
     private String getStringValue(byte[] byteData, String characterEncoding) {
